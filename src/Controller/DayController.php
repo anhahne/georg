@@ -27,6 +27,8 @@ class DayController extends AbstractFOSRestController
      */
     public function index(DayRepository $repo): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        
         $days = $repo->findAll();
         $view = $this->view($days, 200);
         return $this->handleView($view);
