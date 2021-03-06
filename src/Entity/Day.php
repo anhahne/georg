@@ -93,4 +93,9 @@ class Day
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->date->format(\DateTimeInterface::ISO8601) . ", " . $this->title;
+    }
 }
