@@ -8,6 +8,7 @@ use App\Form\DayType;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,9 +26,10 @@ class DayController extends AbstractFOSRestController
     /**
      * @Rest\Get("/api/days", name="days")
      */
-    public function index(DayRepository $repo): Response
-    {        
+    public function index(DayRepository $repo, LoggerInterface $log): Response
+    {
         $days = $repo->findAll();
+        $log->debug('Found {size} day entries.', ['size' => count($days)]);
         $view = $this->view($days, 200);
         return $this->handleView($view);
     }
@@ -59,6 +61,9 @@ class DayController extends AbstractFOSRestController
             $this->em->flush();
 
             $view = $this->view($day, 201);
+
+            $log->info('Created day', ['day' => $day]);
+
             return $this->handleView($view);
         } else {
             $errors = $this->getErrorsFromForm($form);
